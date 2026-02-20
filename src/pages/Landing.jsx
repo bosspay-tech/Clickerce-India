@@ -17,7 +17,7 @@ const HERO_BANNERS = [
 // These should match your Products filter keys (group keys)
 const CATEGORY_CARDS = [
   {
-    key: "fashion",
+    link: "fashion",
     title: "Fashion",
     desc: "New fits • Trending drops",
     icon: "👗",
@@ -25,7 +25,7 @@ const CATEGORY_CARDS = [
       "/fashion.jpg",
   },
   {
-    key: "electronics",
+    link: "electronics",
     title: "Electronics",
     desc: "Phones • Laptops • More",
     icon: "📱",
@@ -33,7 +33,7 @@ const CATEGORY_CARDS = [
       "/banner3.jpg",
   },
   {
-    key: "beauty",
+    link: "beauty",
     title: "Beauty",
     desc: "Skincare • Fragrance",
     icon: "💄",
@@ -41,7 +41,7 @@ const CATEGORY_CARDS = [
       "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=60",
   },
   {
-    key: "home",
+    link: "home",
     title: "Home",
     desc: "Decor • Essentials",
     icon: "🏠",
@@ -49,7 +49,7 @@ const CATEGORY_CARDS = [
       "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=60",
   },
   {
-    key: "auto",
+    link: "auto",
     title: "Auto",
     desc: "Auto • Bike accessories",
     icon: "🏍️",
@@ -57,7 +57,7 @@ const CATEGORY_CARDS = [
       "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=60",
   },
   {
-    key: "sports",
+    link: "sports",
     title: "Sports",
     desc: "Gear • Accessories",
     icon: "🏀",
@@ -271,8 +271,8 @@ export default function Landing() {
             />
 
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {CATEGORY_CARDS.map((c) => (
-                <CategoryCard key={c.key} {...c} />
+              {CATEGORY_CARDS.map((c, idx) => (
+                <CategoryCard key={idx} {...c} />
               ))}
             </div>
 
@@ -517,10 +517,11 @@ function StatCard({ label, value, hint }) {
   );
 }
 
-function CategoryCard({ key: catKey, title, desc, icon, image }) {
+function CategoryCard({ link, title, desc, icon, image }) {
+  console.log(link)
   return (
     <Link
-      to={`/products?category=${catKey}`}
+      to={`/products?type=${link}`}
       className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="relative h-44 bg-slate-100">
