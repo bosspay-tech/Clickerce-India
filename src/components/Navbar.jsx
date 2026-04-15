@@ -51,7 +51,7 @@ export default function Navbar() {
             className="flex items-center gap-2 rounded-xl px-2 py-1 font-bold tracking-tight text-slate-900 hover:bg-slate-100"
             aria-label="Go to homepage"
           >
-            <span className="text-lg">Clickmerce India</span>
+            <span className="text-lg">CLICK MERCE E-Shop Private Limited</span>
           </Link>
         </div>
 

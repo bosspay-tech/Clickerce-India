@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const storeName = "Clickmerce India"; // change if needed
+  const storeName = "CLICK MERCE E-Shop Private Limited"; // change if needed
 
   return (
     <footer className="mt-14 border-t border-slate-200/70 bg-linear-to-b from-white via-white to-slate-50">
@@ -52,6 +52,16 @@ export default function Footer() {
                 <a href="tel:+919909009479" className="hover:text-slate-900">
                   +91 9909009479
                 </a>
+              </div>
+              <div className="flex items-start gap-2">
+                <span>📍</span>
+                <p className="leading-6">
+                  4th floor, 05 Pavansut plaza
+                  <br />
+                  Morbi-Wakaner Highway near Rudra Corporation Lalpar
+                  <br />
+                  Morbi 363642
+                </p>
               </div>
             </div>
           </div>

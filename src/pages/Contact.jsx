@@ -31,17 +31,13 @@ export default function Contact() {
                   <p className="text-xs font-semibold text-slate-500 uppercase">
                     Address
                   </p>
-                  <p className="mt-1 leading-6">
-                    Building No./Flat No.: 1034
-                    <br />
-                    RK World Tower
-                    <br />
-                    150 Feet Ring Road
-                    <br />
-                    Rajkot, Rajkot
-                    <br />
-                    Gujarat – 360007
-                  </p>
+                 <p className="mt-1 leading-6">
+                   4th floor, 05 Pavansut plaza
+                   <br />
+                   Morbi-Wakaner Highway near Rudra Corporation Lalpar
+                   <br />
+                   Morbi 363642
+                 </p>
                 </div>
 
                 <div className="pt-2">
