@@ -1,5 +1,24 @@
 import { useMemo, useState } from "react";
-import { signUp } from "./auth.service";
+import { sendPhoneOtp, verifyPhoneOtp } from "./auth.service";
+
+function formatIndianPhone(phone) {
+  const cleaned = phone.replace(/\D/g, "");
+
+  if (!cleaned) return "";
+  if (cleaned.startsWith("91") && cleaned.length === 12) return `+${cleaned}`;
+  if (cleaned.length === 10) return `+91${cleaned}`;
+
+  return `+${cleaned}`;
+}
+
+function isValidIndianPhone(phone) {
+  const cleaned = phone.replace(/\D/g, "");
+  return cleaned.length === 10 || (cleaned.startsWith("91") && cleaned.length === 12);
+}
+
+function isValidOtp(otp) {
+  return /^\d{6}$/.test(otp.trim());
+}
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
@@ -7,17 +26,28 @@ function isValidEmail(email) {
 
 export default function Signup() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   const [touched, setTouched] = useState({
+    fullName: false,
     email: false,
-    password: false,
-    confirmPassword: false,
+    phone: false,
+    otp: false,
   });
 
   const [formError, setFormError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+
+  const fullNameErr = useMemo(() => {
+    if (!touched.fullName) return "";
+    if (!fullName.trim()) return "Full name is required.";
+    return "";
+  }, [fullName, touched.fullName]);
 
   const emailErr = useMemo(() => {
     if (!touched.email) return "";
@@ -26,62 +56,109 @@ export default function Signup() {
     return "";
   }, [email, touched.email]);
 
-  const passwordErr = useMemo(() => {
-    if (!touched.password) return "";
-    if (!password) return "Password is required.";
-    if (password.length < 6) return "Password must be at least 6 characters.";
+  const phoneErr = useMemo(() => {
+    if (!touched.phone) return "";
+    if (!phone.trim()) return "Phone number is required.";
+    if (!isValidIndianPhone(phone)) return "Please enter a valid 10-digit mobile number.";
     return "";
-  }, [password, touched.password]);
+  }, [phone, touched.phone]);
 
-  const confirmErr = useMemo(() => {
-    if (!touched.confirmPassword) return "";
-    if (!confirmPassword) return "Confirm password is required.";
-    if (password && confirmPassword && password !== confirmPassword)
-      return "Passwords do not match.";
+  const otpErr = useMemo(() => {
+    if (!otpSent || !touched.otp) return "";
+    if (!otp.trim()) return "OTP is required.";
+    if (!isValidOtp(otp)) return "Please enter a valid 6-digit OTP.";
     return "";
-  }, [password, confirmPassword, touched.confirmPassword]);
+  }, [otp, otpSent, touched.otp]);
 
-  const canSubmit =
-    !loading &&
-    email.trim() &&
-    password &&
-    confirmPassword &&
+  const canSendOtp =
+    !sendingOtp && !!fullName.trim() && !!email.trim() && !!phone.trim() && !fullNameErr && !emailErr && !phoneErr;
+  const canVerifyOtp =
+    otpSent &&
+    !verifyingOtp &&
+    !!fullName.trim() &&
+    !!email.trim() &&
+    !!phone.trim() &&
+    !!otp.trim() &&
+    !fullNameErr &&
     !emailErr &&
-    !passwordErr &&
-    !confirmErr;
+    !phoneErr &&
+    !otpErr;
 
-  const handleSubmit = async (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     setFormError("");
+    setSuccessMessage("");
+    setTouched((t) => ({ ...t, fullName: true, email: true, phone: true }));
 
-    // show errors on submit if user didn't touch fields
-    setTouched({ email: true, password: true, confirmPassword: true });
-
-    // final guard
-    if (
-      !email.trim() ||
-      !isValidEmail(email) ||
-      !password ||
-      password.length < 6 ||
-      !confirmPassword ||
-      password !== confirmPassword
-    ) {
-      setFormError("Please fix the errors below and try again.");
+    if (!fullName.trim() || !email.trim() || !isValidEmail(email) || !phone.trim() || !isValidIndianPhone(phone)) {
+      setFormError("Please enter your full name, valid email address, and valid mobile number.");
       return;
     }
 
-    setLoading(true);
+    setSendingOtp(true);
     try {
-      const { error } = await signUp(email.trim(), password);
+      const formattedPhone = formatIndianPhone(phone);
+      const { error } = await sendPhoneOtp({
+        phone: formattedPhone,
+        email: email.trim(),
+        fullName: fullName.trim(),
+      });
+
       if (error) {
-        setFormError(error.message || "Signup failed. Please try again.");
-      } else {
-        alert("Signup successful! You can now log in.");
+        setFormError(error.message || "Failed to send OTP. Please try again.");
+        return;
       }
-    } catch (err) {
-      setFormError("Something went wrong. Please try again.");
+
+      setOtpSent(true);
+      setOtp("");
+      setTouched((t) => ({ ...t, otp: false }));
+      setSuccessMessage(`OTP sent to ${formattedPhone}`);
+    } catch (_err) {
+      setFormError("Something went wrong while sending OTP. Please try again.");
     } finally {
-      setLoading(false);
+      setSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setFormError("");
+    setSuccessMessage("");
+    setTouched((t) => ({ ...t, fullName: true, email: true, phone: true, otp: true }));
+
+    if (
+      !fullName.trim() ||
+      !email.trim() ||
+      !isValidEmail(email) ||
+      !phone.trim() ||
+      !isValidIndianPhone(phone) ||
+      !otp.trim() ||
+      !isValidOtp(otp)
+    ) {
+      setFormError("Please complete your name, email, valid mobile number, and 6-digit OTP.");
+      return;
+    }
+
+    setVerifyingOtp(true);
+    try {
+      const formattedPhone = formatIndianPhone(phone);
+      const { error } = await verifyPhoneOtp({
+        phone: formattedPhone,
+        token: otp.trim(),
+        email: email.trim(),
+        fullName: fullName.trim(),
+      });
+
+      if (error) {
+        setFormError(error.message || "OTP verification failed. Please try again.");
+        return;
+      }
+
+      setSuccessMessage("Account created successfully with your email and mobile number. You are now logged in.");
+    } catch (_err) {
+      setFormError("Something went wrong while verifying OTP. Please try again.");
+    } finally {
+      setVerifyingOtp(false);
     }
   };
 
@@ -89,38 +166,70 @@ export default function Signup() {
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-white flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          {/* Header */}
           <div className="px-6 pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <h2 className="text-2xl font-bold tracking-tight text-slate-900">
                 Create your account
               </h2>
-              <span className="text-xs font-semibold rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-                New Customer
+              <span className="text-xs font-semibold rounded-full bg-slate-100 px-3 py-1 text-slate-700 whitespace-nowrap">
+                Email + Phone OTP Signup
               </span>
             </div>
             <p className="mt-1 text-sm text-slate-500">
-              Create an account to save your details and checkout faster.
+              Sign up with your name, email, mobile number, and verify your phone using OTP.
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="px-6 pb-6 pt-5">
+          <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp} className="px-6 pb-6 pt-5">
             {formError ? (
               <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {formError}
               </div>
             ) : null}
 
-            {/* Email */}
+            {successMessage ? (
+              <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {successMessage}
+              </div>
+            ) : null}
+
             <label className="block text-sm font-medium text-slate-700">
-              Email
+              Full Name
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                value={fullName}
+                placeholder="Enter your full name"
+                onChange={(e) => setFullName(e.target.value)}
+                onBlur={() => setTouched((t) => ({ ...t, fullName: true }))}
+                className={[
+                  "w-full rounded-xl border bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400",
+                  "outline-none transition focus:ring-4",
+                  fullNameErr
+                    ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                    : "border-slate-200 focus:border-slate-400 focus:ring-slate-100",
+                ].join(" ")}
+                autoComplete="name"
+                disabled={sendingOtp || verifyingOtp}
+              />
+              {fullNameErr ? (
+                <p className="mt-2 text-xs text-red-600">{fullNameErr}</p>
+              ) : (
+                <p className="mt-2 text-xs text-slate-500">
+                  Enter the name you want to use for your account.
+                </p>
+              )}
+            </div>
+
+            <label className="mt-4 block text-sm font-medium text-slate-700">
+              Email Address
             </label>
             <div className="mt-2">
               <input
                 type="email"
                 value={email}
-                placeholder="you@domain.com"
+                placeholder="you@example.com"
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                 className={[
@@ -131,84 +240,122 @@ export default function Signup() {
                     : "border-slate-200 focus:border-slate-400 focus:ring-slate-100",
                 ].join(" ")}
                 autoComplete="email"
+                disabled={sendingOtp || verifyingOtp}
               />
               {emailErr ? (
                 <p className="mt-2 text-xs text-red-600">{emailErr}</p>
-              ) : null}
-            </div>
-
-            {/* Password */}
-            <label className="mt-4 block text-sm font-medium text-slate-700">
-              Password
-            </label>
-            <div className="mt-2">
-              <input
-                type="password"
-                value={password}
-                placeholder="Minimum 6 characters"
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-                className={[
-                  "w-full rounded-xl border bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400",
-                  "outline-none transition focus:ring-4",
-                  passwordErr
-                    ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                    : "border-slate-200 focus:border-slate-400 focus:ring-slate-100",
-                ].join(" ")}
-                autoComplete="new-password"
-              />
-              {passwordErr ? (
-                <p className="mt-2 text-xs text-red-600">{passwordErr}</p>
               ) : (
                 <p className="mt-2 text-xs text-slate-500">
-                  Tip: Use a mix of letters and numbers.
+                  We will use this email for account communication.
                 </p>
               )}
             </div>
 
-            {/* Confirm Password */}
             <label className="mt-4 block text-sm font-medium text-slate-700">
-              Confirm password
+              Mobile Number
             </label>
             <div className="mt-2">
               <input
-                type="password"
-                value={confirmPassword}
-                placeholder="Re-enter password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onBlur={() =>
-                  setTouched((t) => ({ ...t, confirmPassword: true }))
-                }
+                type="tel"
+                value={phone}
+                placeholder="9876543210"
+                onChange={(e) => setPhone(e.target.value)}
+                onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
                 className={[
                   "w-full rounded-xl border bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400",
                   "outline-none transition focus:ring-4",
-                  confirmErr
+                  phoneErr
                     ? "border-red-300 focus:border-red-400 focus:ring-red-100"
                     : "border-slate-200 focus:border-slate-400 focus:ring-slate-100",
                 ].join(" ")}
-                autoComplete="new-password"
+                autoComplete="tel"
+                disabled={sendingOtp || verifyingOtp}
               />
-              {confirmErr ? (
-                <p className="mt-2 text-xs text-red-600">{confirmErr}</p>
-              ) : null}
+              {phoneErr ? (
+                <p className="mt-2 text-xs text-red-600">{phoneErr}</p>
+              ) : (
+                <p className="mt-2 text-xs text-slate-500">
+                  Enter your 10-digit number. We will automatically use +91.
+                </p>
+              )}
             </div>
 
-            {/* CTA */}
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className={[
-                "mt-5 w-full rounded-xl py-3 text-sm font-semibold transition",
-                "focus:outline-none focus:ring-4 focus:ring-slate-200",
-                canSubmit
-                  ? "bg-slate-900 text-white hover:bg-slate-800"
-                  : "bg-slate-200 text-slate-500 cursor-not-allowed",
-              ].join(" ")}
-            >
-              {loading ? "Creating account..." : "Sign Up"}
-            </button>
+            {otpSent ? (
+              <>
+                <div className="mt-4 flex items-center justify-between">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Enter OTP
+                  </label>
+                  <button
+                    type="button"
+                    className="text-xs font-semibold text-slate-600 hover:text-slate-900"
+                    onClick={handleSendOtp}
+                    disabled={sendingOtp || verifyingOtp}
+                  >
+                    {sendingOtp ? "Resending..." : "Resend OTP"}
+                  </button>
+                </div>
 
-            {/* Footer */}
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={otp}
+                    placeholder="Enter 6-digit OTP"
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    onBlur={() => setTouched((t) => ({ ...t, otp: true }))}
+                    className={[
+                      "w-full rounded-xl border bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400",
+                      "outline-none transition focus:ring-4",
+                      otpErr
+                        ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                        : "border-slate-200 focus:border-slate-400 focus:ring-slate-100",
+                    ].join(" ")}
+                    autoComplete="one-time-code"
+                    disabled={verifyingOtp}
+                  />
+                  {otpErr ? (
+                    <p className="mt-2 text-xs text-red-600">{otpErr}</p>
+                  ) : (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Enter the 6-digit code sent to your mobile number.
+                    </p>
+                  )}
+                </div>
+              </>
+            ) : null}
+
+            {!otpSent ? (
+              <button
+                type="submit"
+                disabled={!canSendOtp}
+                className={[
+                  "mt-5 w-full rounded-xl py-3 text-sm font-semibold transition",
+                  "focus:outline-none focus:ring-4 focus:ring-slate-200",
+                  canSendOtp
+                    ? "bg-slate-900 text-white hover:bg-slate-800"
+                    : "bg-slate-200 text-slate-500 cursor-not-allowed",
+                ].join(" ")}
+              >
+                {sendingOtp ? "Sending OTP..." : "Send OTP"}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!canVerifyOtp}
+                className={[
+                  "mt-5 w-full rounded-xl py-3 text-sm font-semibold transition",
+                  "focus:outline-none focus:ring-4 focus:ring-slate-200",
+                  canVerifyOtp
+                    ? "bg-slate-900 text-white hover:bg-slate-800"
+                    : "bg-slate-200 text-slate-500 cursor-not-allowed",
+                ].join(" ")}
+              >
+                {verifyingOtp ? "Verifying OTP..." : "Verify OTP & Sign Up"}
+              </button>
+            )}
+
             <div className="mt-5 text-center text-sm text-slate-600">
               Already have an account?{" "}
               <button
@@ -228,15 +375,10 @@ export default function Signup() {
           </form>
         </div>
 
-        {/* Trust row */}
-        <div className="mt-4 flex items-center justify-center gap-3 text-xs text-slate-500">
+        <div className="mt-4 flex items-center justify-center gap-3 text-xs text-slate-500 flex-wrap">
           <span className="rounded-full bg-slate-100 px-3 py-1">🔒 Secure</span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">
-            🚚 Fast checkout
-          </span>
-          <span className="rounded-full bg-slate-100 px-3 py-1">
-            ✅ Trusted
-          </span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">🚚 Fast checkout</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1">✅ Trusted</span>
         </div>
       </div>
     </div>

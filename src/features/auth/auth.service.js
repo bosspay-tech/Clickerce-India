@@ -1,10 +1,22 @@
 import { supabase } from "../../lib/supabase";
 
+export const sendPhoneOtp = async (phone) => {
+  return await supabase.auth.signInWithOtp({
+    phone,
+    options: {
+      shouldCreateUser: true,
+    },
+  });
+};
 
-export const signUp = (email, password) =>
-  supabase.auth.signUp({ email, password });
+export const verifyPhoneOtp = async (phone, token) => {
+  return await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms",
+  });
+};
 
-export const signIn = (email, password) =>
-  supabase.auth.signInWithPassword({ email, password });
-
-export const signOut = () => supabase.auth.signOut();
+export const signOut = async () => {
+  return await supabase.auth.signOut();
+};
