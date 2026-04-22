@@ -47,6 +47,7 @@ export default function Products() {
 
       // We will fetch all products and filter locally to avoid case-sensitivity or missing column issues
       const { data, error } = await query;
+      console.log(data);
 
       if (!alive) return;
 
@@ -74,8 +75,8 @@ export default function Products() {
       result = result.filter((p) => {
         const c1 = String(p.category || "").toLowerCase();
         const c2 = String(p.type || "").toLowerCase();
-        const c3 = Array.isArray(p.categories) 
-          ? p.categories.join(" ").toLowerCase() 
+        const c3 = Array.isArray(p.categories)
+          ? p.categories.join(" ").toLowerCase()
           : String(p.categories || "").toLowerCase();
         const c4 = String(p.collection || "").toLowerCase();
         const c5 = Array.isArray(p.tags)
