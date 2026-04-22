@@ -45,10 +45,7 @@ export default function Products() {
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
-      // ✅ Filter by collection if provided
-      if (category) query = query.contains("categories", [category]);
-      if (type) query = query.eq("type", type);
-
+      // We will fetch all products and filter locally to avoid case-sensitivity or missing column issues
       const { data, error } = await query;
 
       if (!alive) return;
@@ -66,15 +63,33 @@ export default function Products() {
     return () => {
       alive = false;
     };
-  }, [type, category]);
+  }, []);
 
   const filtered = useMemo(() => {
+    let result = products;
+
+    // Filter by category or type if present in URL
+    const filterCat = (category || type || "").trim().toLowerCase();
+    if (filterCat) {
+      result = result.filter((p) => {
+        const c1 = String(p.category || "").toLowerCase();
+        const c2 = String(p.type || "").toLowerCase();
+        const c3 = Array.isArray(p.categories)
+          ? p.categories.map((c) => String(c).toLowerCase())
+          : [];
+        return c1 === filterCat || c2 === filterCat || c3.includes(filterCat);
+      });
+    }
+
+    // Filter by search query
     const s = q.trim().toLowerCase();
-    if (!s) return products;
-    return products.filter((p) =>
-      `${p.title ?? ""} ${p.description ?? ""}`.toLowerCase().includes(s),
-    );
-  }, [products, q]);
+    if (s) {
+      result = result.filter((p) =>
+        `${p.title ?? ""} ${p.description ?? ""}`.toLowerCase().includes(s),
+      );
+    }
+    return result;
+  }, [products, q, category, type]);
 
   return (
     <div className="min-h-[70vh] bg-linear-to-b from-slate-50 to-white">

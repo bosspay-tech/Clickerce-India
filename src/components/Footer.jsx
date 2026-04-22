@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const storeName = "CLICK MERCE E-Shop Private Limited"; // change if needed
+  const storeName = "CLICKMERCE E-SHOP PRIVATE LIMITED"; // change if needed
 
   return (
     <footer className="mt-14 border-t border-slate-200/70 bg-linear-to-b from-white via-white to-slate-50">
@@ -49,18 +49,22 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <span>📞</span>
-                <a href="tel:+919909009479" className="hover:text-slate-900">
-                  +91 9909009479
+                <a href="tel:+919909931373" className="hover:text-slate-900">
+                  +91 9909931373
                 </a>
               </div>
               <div className="flex items-start gap-2">
                 <span>📍</span>
                 <p className="leading-6">
-                  4th floor, 05 Pavansut plaza
+                  Building No./Flat No.: 1034
                   <br />
-                  Morbi-Wakaner Highway near Rudra Corporation Lalpar
+                  RK World Tower
                   <br />
-                  Morbi 363642
+                  150 Feet Ring Road
+                  <br />
+                  Rajkot, Rajkot
+                  <br />
+                  Gujarat - 360007
                 </p>
               </div>
             </div>

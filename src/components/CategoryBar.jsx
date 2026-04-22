@@ -22,12 +22,12 @@ export default function CategoryNavBar({
 
   const activeKey = useMemo(() => {
     if (!pathname.startsWith(basePath)) return null;
-    return params.get("category") || "all";
+    return params.get("category") || params.get("type") || "all";
   }, [pathname, params, basePath]);
 
   const go = (key) => {
     const sp = new URLSearchParams();
-    if (key && key !== "all") sp.set("type", key);
+    if (key && key !== "all") sp.set("category", key);
 
     nav({
       pathname: basePath,

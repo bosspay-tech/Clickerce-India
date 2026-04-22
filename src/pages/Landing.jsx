@@ -518,10 +518,9 @@ function StatCard({ label, value, hint }) {
 }
 
 function CategoryCard({ link, title, desc, icon, image }) {
-  console.log(link)
   return (
     <Link
-      to={`/products?type=${link}`}
+      to={`/products?category=${link}`}
       className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
     >
       <div className="relative h-44 bg-slate-100">
