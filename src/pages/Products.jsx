@@ -74,10 +74,21 @@ export default function Products() {
       result = result.filter((p) => {
         const c1 = String(p.category || "").toLowerCase();
         const c2 = String(p.type || "").toLowerCase();
-        const c3 = Array.isArray(p.categories)
-          ? p.categories.map((c) => String(c).toLowerCase())
-          : [];
-        return c1 === filterCat || c2 === filterCat || c3.includes(filterCat);
+        const c3 = Array.isArray(p.categories) 
+          ? p.categories.join(" ").toLowerCase() 
+          : String(p.categories || "").toLowerCase();
+        const c4 = String(p.collection || "").toLowerCase();
+        const c5 = Array.isArray(p.tags)
+          ? p.tags.join(" ").toLowerCase()
+          : String(p.tags || "").toLowerCase();
+
+        return (
+          c1.includes(filterCat) ||
+          c2.includes(filterCat) ||
+          c3.includes(filterCat) ||
+          c4.includes(filterCat) ||
+          c5.includes(filterCat)
+        );
       });
     }
 
