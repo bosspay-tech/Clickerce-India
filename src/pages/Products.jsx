@@ -45,9 +45,14 @@ export default function Products() {
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
-      // We will fetch all products and filter locally to avoid case-sensitivity or missing column issues
+      if (category) {
+        query = query.contains("categories", [category]);
+      } else if (type) {
+        // Fallback for old links
+        query = query.contains("categories", [type]);
+      }
+
       const { data, error } = await query;
-      console.log(data);
 
       if (!alive) return;
 
@@ -64,36 +69,12 @@ export default function Products() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [category, type]);
 
   const filtered = useMemo(() => {
     let result = products;
 
-    // Filter by category or type if present in URL
-    const filterCat = (category || type || "").trim().toLowerCase();
-    if (filterCat) {
-      result = result.filter((p) => {
-        const c1 = String(p.category || "").toLowerCase();
-        const c2 = String(p.type || "").toLowerCase();
-        const c3 = Array.isArray(p.categories)
-          ? p.categories.join(" ").toLowerCase()
-          : String(p.categories || "").toLowerCase();
-        const c4 = String(p.collection || "").toLowerCase();
-        const c5 = Array.isArray(p.tags)
-          ? p.tags.join(" ").toLowerCase()
-          : String(p.tags || "").toLowerCase();
-
-        return (
-          c1.includes(filterCat) ||
-          c2.includes(filterCat) ||
-          c3.includes(filterCat) ||
-          c4.includes(filterCat) ||
-          c5.includes(filterCat)
-        );
-      });
-    }
-
-    // Filter by search query
+    // Filter by search query only (categories are already filtered by DB)
     const s = q.trim().toLowerCase();
     if (s) {
       result = result.filter((p) =>
@@ -101,7 +82,7 @@ export default function Products() {
       );
     }
     return result;
-  }, [products, q, category, type]);
+  }, [products, q]);
 
   return (
     <div className="min-h-[70vh] bg-linear-to-b from-slate-50 to-white">
