@@ -56,15 +56,13 @@ export default function Footer() {
               <div className="flex items-start gap-2">
                 <span>📍</span>
                 <p className="leading-6">
-                  Building No./Flat No.: 1034
+                  PAVANSUT PLAZA, 4TH FLOOR, NO.5,
                   <br />
-                  RK World Tower
+                  WAKANER HIGHWAY
                   <br />
-                  150 Feet Ring Road
+                  MORBI, LALPAR, RUDRA CORPORATION,
                   <br />
-                  Rajkot, Rajkot
-                  <br />
-                  Gujarat - 360007
+                  GUJARAT-363642
                 </p>
               </div>
             </div>
