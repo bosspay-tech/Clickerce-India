@@ -18,6 +18,15 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [shippingDetails, setShippingDetails] = useState({
+    fullName: user?.user_metadata?.full_name || "",
+    phone: user?.phone || "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: ""
+  });
+
   const subtotal = useMemo(() => Number(total()), [total]);
   const totalItems = useMemo(
     () => items.reduce((sum, it) => sum + Number(it.quantity || 0), 0),
@@ -48,9 +57,20 @@ export default function Checkout() {
     );
   }
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setShippingDetails(prev => ({ ...prev, [name]: value }));
+  };
+
   const placeOrder = async () => {
     setLoading(true);
     setError("");
+
+    if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address || !shippingDetails.city || !shippingDetails.state || !shippingDetails.pincode) {
+      setError("Please fill out all shipping details.");
+      setLoading(false);
+      return;
+    }
 
     const { error } = await supabase.from("orders").insert({
       store_id: STORE_ID,
@@ -58,6 +78,7 @@ export default function Checkout() {
       items,
       total: subtotal,
       status: "placed",
+      shipping_details: shippingDetails
     });
 
     if (error) {
@@ -118,8 +139,94 @@ export default function Checkout() {
 
         {/* Layout */}
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {/* Order summary list */}
-          <div className="lg:col-span-2">
+          {/* Main content column (Shipping details and Order summary) */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* Shipping Details */}
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Shipping Details
+                </h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  Enter your address and contact information.
+                </p>
+              </div>
+
+              <div className="px-5 py-4">
+                <form className="grid gap-4 sm:grid-cols-2">
+                  <div className="sm:col-span-1">
+                    <label className="text-xs font-semibold text-slate-700">Full Name</label>
+                    <input
+                      required
+                      name="fullName"
+                      value={shippingDetails.fullName}
+                      onChange={handleInputChange}
+                      placeholder="Your Name"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="text-xs font-semibold text-slate-700">Phone</label>
+                    <input
+                      required
+                      name="phone"
+                      value={shippingDetails.phone}
+                      onChange={handleInputChange}
+                      placeholder="Your Phone Number"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-semibold text-slate-700">Address</label>
+                    <textarea
+                      required
+                      name="address"
+                      value={shippingDetails.address}
+                      onChange={handleInputChange}
+                      placeholder="Street address, apartment, suite, etc."
+                      rows={2}
+                      className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="text-xs font-semibold text-slate-700">City</label>
+                    <input
+                      required
+                      name="city"
+                      value={shippingDetails.city}
+                      onChange={handleInputChange}
+                      placeholder="City"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="text-xs font-semibold text-slate-700">State</label>
+                    <input
+                      required
+                      name="state"
+                      value={shippingDetails.state}
+                      onChange={handleInputChange}
+                      placeholder="State"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className="text-xs font-semibold text-slate-700">Pincode</label>
+                    <input
+                      required
+                      name="pincode"
+                      value={shippingDetails.pincode}
+                      onChange={handleInputChange}
+                      placeholder="Pincode"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            {/* Order summary list */}
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
               <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
                 <h3 className="text-sm font-semibold text-slate-900">

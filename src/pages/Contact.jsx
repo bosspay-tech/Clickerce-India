@@ -32,11 +32,13 @@ export default function Contact() {
                     Address
                   </p>
                  <p className="mt-1 leading-6">
-                   4th floor, 05 Pavansut plaza
+                   PAVANSUT PLAZA, 4TH FLOOR, NO.5,
                    <br />
-                   Morbi-Wakaner Highway near Rudra Corporation Lalpar
+                   WAKANER HIGHWAY
                    <br />
-                   Morbi 363642
+                   MORBI, LALPAR, RUDRA CORPORATION,
+                   <br />
+                   GUJARAT-363642
                  </p>
                 </div>
 
