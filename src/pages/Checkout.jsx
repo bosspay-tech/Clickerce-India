@@ -20,6 +20,7 @@ export default function Checkout() {
 
   const [shippingDetails, setShippingDetails] = useState({
     fullName: user?.user_metadata?.full_name || "",
+    email: user?.email || "",
     phone: user?.phone || "",
     address: "",
     city: "",
@@ -66,7 +67,7 @@ export default function Checkout() {
     setLoading(true);
     setError("");
 
-    if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.address || !shippingDetails.city || !shippingDetails.state || !shippingDetails.pincode) {
+    if (!shippingDetails.fullName || !shippingDetails.phone || !shippingDetails.email || !shippingDetails.address || !shippingDetails.city || !shippingDetails.state || !shippingDetails.pincode) {
       setError("Please fill out all shipping details.");
       setLoading(false);
       return;
@@ -167,6 +168,18 @@ export default function Checkout() {
                     />
                   </div>
                   <div className="sm:col-span-1">
+                    <label className="text-xs font-semibold text-slate-700">Email Address</label>
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      value={shippingDetails.email}
+                      onChange={handleInputChange}
+                      placeholder="you@example.com"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
                     <label className="text-xs font-semibold text-slate-700">Phone</label>
                     <input
                       required

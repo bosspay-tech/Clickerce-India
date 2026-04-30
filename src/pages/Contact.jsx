@@ -32,14 +32,24 @@ export default function Contact() {
                     Address
                   </p>
                  <p className="mt-1 leading-6">
-                   PAVANSUT PLAZA, 4TH FLOOR, NO.5,
+                   PAVANSUT PLAZA,NO.05,FOURTH FLOOR,
                    <br />
-                   WAKANER HIGHWAY
+                   MORBI-WAKANER HIGHWAY,RUDRA CORPORATION,
                    <br />
-                   MORBI, LALPAR, RUDRA CORPORATION,
-                   <br />
-                   GUJARAT-363642
+                   LALPAR,MORBI,GUJARAT-363642
                  </p>
+                </div>
+
+                <div className="pt-2">
+                  <p className="text-xs font-semibold text-slate-500 uppercase">
+                    Email
+                  </p>
+                  <a
+                    href="mailto:support@clickmerceindia.com"
+                    className="mt-1 inline-flex items-center gap-2 font-semibold text-slate-900 hover:underline"
+                  >
+                    ✉️ support@clickmerceindia.com
+                  </a>
                 </div>
 
                 <div className="pt-2">
@@ -52,6 +62,14 @@ export default function Contact() {
                   >
                     📞 +91 9909931373
                   </a>
+                </div>
+
+                <div className="pt-2">
+                  <p className="text-xs font-semibold text-slate-500 uppercase">
+                    Registration Info
+                  </p>
+                  <p className="mt-1 font-semibold text-slate-900 text-xs">GST: 24AAMCC8211G1ZT</p>
+                  <p className="mt-1 font-semibold text-slate-900 text-xs">CIN: U47912GJ2025PTC164060</p>
                 </div>
               </div>
 

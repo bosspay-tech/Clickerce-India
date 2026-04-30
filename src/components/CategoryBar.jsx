@@ -4,12 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // Keep these keys SAME as what your Products page understands
 const NAV_CATEGORIES = [
   { key: "all", label: "All", icon: "✨" },
-  { key: "fashion", label: "Fashion", icon: "👗" },
-  { key: "electronics", label: "Electronics", icon: "📱" },
-  { key: "beauty", label: "Beauty", icon: "💄" },
-  { key: "home", label: "Home", icon: "🏠" },
-  { key: "auto", label: "Auto", icon: "🏍️" },
-  { key: "sports", label: "Sports", icon: "🏀" },
+  { key: "cosmetics", label: "Cosmetics", icon: "💄" },
 ];
 
 export default function CategoryNavBar({

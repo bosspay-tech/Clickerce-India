@@ -56,14 +56,18 @@ export default function Footer() {
               <div className="flex items-start gap-2">
                 <span>📍</span>
                 <p className="leading-6">
-                  PAVANSUT PLAZA, 4TH FLOOR, NO.5,
+                  PAVANSUT PLAZA,NO.05,FOURTH FLOOR,
                   <br />
-                  WAKANER HIGHWAY
+                  MORBI-WAKANER HIGHWAY,RUDRA CORPORATION,
                   <br />
-                  MORBI, LALPAR, RUDRA CORPORATION,
-                  <br />
-                  GUJARAT-363642
+                  LALPAR,MORBI,GUJARAT-363642
                 </p>
+              </div>
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                <span className="text-xs font-semibold text-slate-500">GST: 24AAMCC8211G1ZT</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-slate-500">CIN: U47912GJ2025PTC164060</span>
               </div>
             </div>
           </div>
@@ -152,6 +156,14 @@ export default function Footer() {
                       to="/contact"
                     >
                       Contact
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="text-slate-600 hover:text-slate-900"
+                      to="/about"
+                    >
+                      About Us
                     </Link>
                   </li>
                 </ul>

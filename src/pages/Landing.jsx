@@ -14,55 +14,14 @@ const HERO_BANNERS = [
   "/banner5.jpg",
 ];
 
-// These should match your Products filter keys (group keys)
 const CATEGORY_CARDS = [
   {
-    link: "fashion",
-    title: "Fashion",
-    desc: "New fits • Trending drops",
-    icon: "👗",
-    image:
-      "/fashion.jpg",
-  },
-  {
-    link: "electronics",
-    title: "Electronics",
-    desc: "Phones • Laptops • More",
-    icon: "📱",
-    image:
-      "/banner3.jpg",
-  },
-  {
-    link: "beauty",
-    title: "Beauty",
-    desc: "Skincare • Fragrance",
+    link: "cosmetics",
+    title: "Cosmetics",
+    desc: "Skincare • Makeup • Haircare",
     icon: "💄",
     image:
       "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=60",
-  },
-  {
-    link: "home",
-    title: "Home",
-    desc: "Decor • Essentials",
-    icon: "🏠",
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=60",
-  },
-  {
-    link: "auto",
-    title: "Auto",
-    desc: "Auto • Bike accessories",
-    icon: "🏍️",
-    image:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=60",
-  },
-  {
-    link: "sports",
-    title: "Sports",
-    desc: "Gear • Accessories",
-    icon: "🏀",
-    image:
-      "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=1600&q=60",
   },
 ];
 
@@ -197,17 +156,17 @@ export default function Landing() {
                           <button
                             type="button"
                             onClick={() =>
-                              navigate("/products?category=fashion")
+                              navigate("/products?category=cosmetics")
                             }
                             className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/20"
                           >
-                            Explore Fashion
+                            Explore Cosmetics
                           </button>
                         </div>
 
                         {/* Quick category chips */}
                         <div className="mt-6 flex flex-wrap gap-2">
-                          {["fashion", "electronics", "beauty", "home"].map(
+                          {["cosmetics"].map(
                             (k) => (
                               <Link
                                 key={k}
@@ -247,7 +206,7 @@ export default function Landing() {
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <StatCard label="Products" value="500+" hint="Fresh catalog" />
-              <StatCard label="Categories" value="6+" hint="Shop by need" />
+              <StatCard label="Categories" value="1" hint="Curated selection" />
               <StatCard label="Checkout" value="Fast" hint="Mobile-first UX" />
             </div>
           </div>
@@ -280,18 +239,18 @@ export default function Landing() {
             <div className="mt-10 grid gap-4 md:grid-cols-2">
               <GlassCTA
                 title="Looking for the best deals?"
-                desc="Shop top picks across categories with clear discount visibility."
+                desc="Shop top cosmetics with clear discount visibility."
                 primary={{ label: "Shop now", to: "/products" }}
                 secondary={{
-                  label: "Electronics",
-                  to: "/products?category=electronics",
+                  label: "Cosmetics",
+                  to: "/products?category=cosmetics",
                 }}
               />
               <GlassCTA
                 title="Start with your vibe"
-                desc="Fashion, beauty, home — discover curated essentials you’ll love."
-                primary={{ label: "Fashion", to: "/products?category=fashion" }}
-                secondary={{ label: "Beauty", to: "/products?category=beauty" }}
+                desc="Skincare, makeup, haircare — discover curated essentials you’ll love."
+                primary={{ label: "Cosmetics", to: "/products?category=cosmetics" }}
+                secondary={{ label: "All Products", to: "/products" }}
               />
             </div>
           </div>
@@ -347,10 +306,10 @@ export default function Landing() {
                       Browse products →
                     </Link>
                     <Link
-                      to="/products?category=home"
+                      to="/products?category=cosmetics"
                       className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/15"
                     >
-                      Explore Home
+                      Explore Cosmetics
                     </Link>
                   </div>
                 </div>
@@ -363,7 +322,7 @@ export default function Landing() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <MiniMetric label="MRP + OFF" value="Visible" />
                     <MiniMetric label="Search" value="Fast" />
-                    <MiniMetric label="Categories" value="6+" />
+                    <MiniMetric label="Categories" value="1" />
                     <MiniMetric label="Products" value="500+" />
                   </div>
 

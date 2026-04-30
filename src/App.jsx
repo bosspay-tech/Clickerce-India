@@ -19,6 +19,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CategoryBar from "./components/CategoryBar";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
 const App = () => {
   return (
     <Router>
@@ -40,6 +41,7 @@ const App = () => {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
         <Route
           path="/orders"
           element={
