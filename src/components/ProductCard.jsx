@@ -17,8 +17,7 @@ export function normalizeHttpsUrl(raw) {
   return `https://${s}`;
 }
 
-function ProductCard({ product, onViewDetails }) {
-  const [hasError, setHasError] = useState(false);
+function ProductCard({ product, onViewDetails, onImageError }) {
   const price = Number(product?.base_price ?? 0);
   const imageUrl = normalizeHttpsUrl(product?.image_url);
   const hasMrp = product?.mrp != null && Number(product.mrp) > 0;
@@ -26,10 +25,6 @@ function ProductCard({ product, onViewDetails }) {
 
   const discountPct =
     hasMrp && price > 0 ? Math.round(((mrp - price) / mrp) * 100) : null;
-
-  if (hasError || !imageUrl) {
-    return null;
-  }
 
   return (
     <div className="group relative overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -46,7 +41,7 @@ function ProductCard({ product, onViewDetails }) {
           alt={product?.title || "Product"}
           loading="lazy"
           className="h-full w-full object-contain p-6 transition-transform duration-300 group-hover:scale-[1.03]"
-          onError={() => setHasError(true)}
+          onError={onImageError}
         />
 
         {/* Badge */}

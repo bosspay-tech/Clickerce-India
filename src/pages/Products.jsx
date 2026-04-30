@@ -27,6 +27,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [brokenImages, setBrokenImages] = useState(new Set());
 
   // (optional) basic search
   const [q, setQ] = useState("");
@@ -82,8 +83,12 @@ export default function Products() {
         `${p.title ?? ""} ${p.description ?? ""}`.toLowerCase().includes(s),
       );
     }
+    
+    // Filter out products with known broken images or missing URLs
+    result = result.filter(p => !brokenImages.has(p.id) && p.image_url);
+
     return result;
-  }, [products, q]);
+  }, [products, q, brokenImages]);
 
   return (
     <div className="min-h-[70vh] bg-linear-to-b from-slate-50 to-white">
@@ -166,7 +171,10 @@ export default function Products() {
                     to={`/products/${product.id}`}
                     className="block focus:outline-none focus:ring-4 focus:ring-slate-200 rounded-2xl"
                   >
-                    <ProductCard product={product} />
+                    <ProductCard 
+                      product={product} 
+                      onImageError={() => setBrokenImages(prev => new Set(prev).add(product.id))} 
+                    />
                   </Link>
                 ))}
               </div>
