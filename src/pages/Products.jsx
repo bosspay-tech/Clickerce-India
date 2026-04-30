@@ -43,9 +43,10 @@ export default function Products() {
         .select("*")
         .eq("store_id", STORE_ID)
         .eq("is_active", true)
+        .overlaps("categories", ["hair-care", "skin-care", "treatments", "cosmetics", "beauty"])
         .order("created_at", { ascending: false });
 
-      if (category) {
+      if (category && category !== "cosmetics" && category !== "all") {
         query = query.contains("categories", [category]);
       } else if (type) {
         // Fallback for old links
