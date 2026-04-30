@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { sendPhoneOtp, verifyPhoneOtp } from "./auth.service";
+import { sendEmailOtp, verifyEmailOtp } from "./auth.service";
 
 function formatIndianPhone(phone) {
   const cleaned = phone.replace(/\D/g, "");
@@ -98,7 +98,7 @@ export default function Signup() {
     setSendingOtp(true);
     try {
       const formattedPhone = formatIndianPhone(phone);
-      const { error } = await sendPhoneOtp({
+      const { error } = await sendEmailOtp({
         phone: formattedPhone,
         email: email.trim(),
         fullName: fullName.trim(),
@@ -112,7 +112,7 @@ export default function Signup() {
       setOtpSent(true);
       setOtp("");
       setTouched((t) => ({ ...t, otp: false }));
-      setSuccessMessage(`OTP sent to ${formattedPhone}`);
+      setSuccessMessage(`OTP sent to ${email.trim()}`);
     } catch (_err) {
       setFormError("Something went wrong while sending OTP. Please try again.");
     } finally {
@@ -142,7 +142,7 @@ export default function Signup() {
     setVerifyingOtp(true);
     try {
       const formattedPhone = formatIndianPhone(phone);
-      const { error } = await verifyPhoneOtp({
+      const { error } = await verifyEmailOtp({
         phone: formattedPhone,
         token: otp.trim(),
         email: email.trim(),
@@ -172,11 +172,11 @@ export default function Signup() {
                 Create your account
               </h2>
               <span className="text-xs font-semibold rounded-full bg-slate-100 px-3 py-1 text-slate-700 whitespace-nowrap">
-                Email + Phone OTP Signup
+                Email OTP Signup
               </span>
             </div>
             <p className="mt-1 text-sm text-slate-500">
-              Sign up with your name, email, mobile number, and verify your phone using OTP.
+              Sign up with your name, email, mobile number, and verify your email using OTP.
             </p>
           </div>
 
@@ -319,7 +319,7 @@ export default function Signup() {
                     <p className="mt-2 text-xs text-red-600">{otpErr}</p>
                   ) : (
                     <p className="mt-2 text-xs text-slate-500">
-                      Enter the 6-digit code sent to your mobile number.
+                      Enter the 6-digit code sent to your email address.
                     </p>
                   )}
                 </div>

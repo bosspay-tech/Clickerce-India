@@ -1,23 +1,23 @@
 import { supabase } from "../../lib/supabase";
 
-export const sendPhoneOtp = async ({ phone, email = "", fullName = "" }) => {
+export const sendEmailOtp = async ({ email, phone = "", fullName = "" }) => {
   return await supabase.auth.signInWithOtp({
-    phone,
+    email,
     options: {
       shouldCreateUser: true,
       data: {
-        email: email.trim() || null,
+        phone: phone.trim() || null,
         full_name: fullName.trim() || null,
       },
     },
   });
 };
 
-export const verifyPhoneOtp = async ({ phone, token, email = "", fullName = "" }) => {
+export const verifyEmailOtp = async ({ email, token, phone = "", fullName = "" }) => {
   const verifyResponse = await supabase.auth.verifyOtp({
-    phone,
+    email,
     token,
-    type: "sms",
+    type: "email",
   });
 
   if (verifyResponse.error || !verifyResponse.data?.user) {
@@ -26,14 +26,10 @@ export const verifyPhoneOtp = async ({ phone, token, email = "", fullName = "" }
 
   const updates = {};
 
-  if (email.trim()) {
-    updates.email = email.trim();
-  }
-
-  if (fullName.trim()) {
-    updates.data = {
-      full_name: fullName.trim(),
-    };
+  if (phone.trim() || fullName.trim()) {
+    updates.data = {};
+    if (phone.trim()) updates.data.phone = phone.trim();
+    if (fullName.trim()) updates.data.full_name = fullName.trim();
   }
 
   if (!Object.keys(updates).length) {

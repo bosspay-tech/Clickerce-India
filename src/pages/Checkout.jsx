@@ -79,7 +79,13 @@ export default function Checkout() {
       items,
       total: subtotal,
       status: "placed",
-      shipping_details: shippingDetails
+      customer_name: shippingDetails.fullName,
+      customer_email: shippingDetails.email,
+      customer_phone: shippingDetails.phone,
+      customer_address: shippingDetails.address,
+      customer_city: shippingDetails.city,
+      customer_state: shippingDetails.state,
+      customer_pincode: shippingDetails.pincode,
     });
 
     if (error) {

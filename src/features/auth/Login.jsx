@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { sendPhoneOtp, verifyPhoneOtp } from "./auth.service";
+import { sendEmailOtp, verifyEmailOtp } from "./auth.service";
 
 function formatIndianPhone(phone) {
   const cleaned = phone.replace(/\D/g, "");
@@ -75,7 +75,7 @@ export default function Login() {
     setSendingOtp(true);
     try {
       const formattedPhone = formatIndianPhone(phone);
-      const { error } = await sendPhoneOtp(formattedPhone);
+      const { error } = await sendEmailOtp({ email: email.trim(), phone: formattedPhone });
 
       if (error) {
         setFormError(error.message || "Failed to send OTP. Please try again.");
@@ -85,7 +85,7 @@ export default function Login() {
       setOtpSent(true);
       setOtp("");
       setTouched((t) => ({ ...t, otp: false }));
-      setSuccessMessage(`OTP sent to ${formattedPhone}`);
+      setSuccessMessage(`OTP sent to ${email.trim()}`);
     } catch (err) {
       setFormError("Something went wrong while sending OTP. Please try again.");
     } finally {
@@ -114,7 +114,7 @@ export default function Login() {
     setVerifyingOtp(true);
     try {
       const formattedPhone = formatIndianPhone(phone);
-      const { error } = await verifyPhoneOtp(formattedPhone, otp.trim());
+      const { error } = await verifyEmailOtp({ email: email.trim(), token: otp.trim(), phone: formattedPhone });
 
       if (error) {
         setFormError(error.message || "OTP verification failed. Please try again.");
@@ -139,11 +139,11 @@ export default function Login() {
                 Welcome back
               </h2>
               <span className="text-xs font-semibold rounded-full bg-slate-100 px-3 py-1 text-slate-700 whitespace-nowrap">
-                Email + Phone OTP Login
+                Email OTP Login
               </span>
             </div>
             <p className="mt-1 text-sm text-slate-500">
-              Sign in with your email, mobile number, and one-time password
+              Sign in with your email address and one-time password
             </p>
           </div>
 
@@ -257,7 +257,7 @@ export default function Login() {
                     <p className="mt-2 text-xs text-red-600">{otpErr}</p>
                   ) : (
                     <p className="mt-2 text-xs text-slate-500">
-                      Enter the 6-digit code sent to your mobile number.
+                      Enter the 6-digit code sent to your email address.
                     </p>
                   )}
                 </div>
