@@ -17,7 +17,7 @@ function isValidIndianPhone(phone) {
 }
 
 function isValidOtp(otp) {
-  return /^\d{6}$/.test(otp.trim());
+  return /^\d{6,8}$/.test(otp.trim());
 }
 
 function isValidEmail(email) {
@@ -53,7 +53,7 @@ export default function Login() {
   const otpErr = useMemo(() => {
     if (!otpSent || !touched.otp) return "";
     if (!otp.trim()) return "OTP is required.";
-    if (!isValidOtp(otp)) return "Please enter a valid 6-digit OTP.";
+    if (!isValidOtp(otp)) return "Please enter a valid OTP.";
     return "";
   }, [otp, otpSent, touched.otp]);
 
@@ -107,7 +107,7 @@ export default function Login() {
       !otp.trim() ||
       !isValidOtp(otp)
     ) {
-      setFormError("Please enter a valid email address, mobile number, and 6-digit OTP.");
+      setFormError("Please enter a valid email address, mobile number, and OTP.");
       return;
     }
 
@@ -238,9 +238,9 @@ export default function Login() {
                   <input
                     type="text"
                     inputMode="numeric"
-                    maxLength={6}
+                    maxLength={8}
                     value={otp}
-                    placeholder="Enter 6-digit OTP"
+                    placeholder="Enter OTP"
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                     onBlur={() => setTouched((t) => ({ ...t, otp: true }))}
                     className={[
@@ -257,7 +257,7 @@ export default function Login() {
                     <p className="mt-2 text-xs text-red-600">{otpErr}</p>
                   ) : (
                     <p className="mt-2 text-xs text-slate-500">
-                      Enter the 6-digit code sent to your email address.
+                      Enter the code sent to your email address.
                     </p>
                   )}
                 </div>
